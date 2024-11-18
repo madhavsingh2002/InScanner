@@ -62,4 +62,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation("androidx.camera:camera-camera2:1.4.0")
+    implementation("androidx.activity:activity-compose:1.7.2")
 }
