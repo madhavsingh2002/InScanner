@@ -1,4 +1,4 @@
-package com.example.inscanner.Pages
+package com.mkl.inscanner.Pages
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.inscanner.R
+import com.mkl.inscanner.R
 import kotlinx.coroutines.delay
 
 @Composable

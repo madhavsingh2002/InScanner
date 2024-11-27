@@ -1,4 +1,4 @@
-package com.example.inscanner
+package com.mkl.inscanner
 
 import org.junit.Test
 

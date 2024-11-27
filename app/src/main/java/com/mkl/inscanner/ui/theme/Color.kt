@@ -1,4 +1,4 @@
-package com.example.inscanner.ui.theme
+package com.mkl.inscanner.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

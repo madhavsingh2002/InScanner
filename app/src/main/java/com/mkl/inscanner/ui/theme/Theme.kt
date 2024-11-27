@@ -1,4 +1,4 @@
-package com.example.inscanner.ui.theme
+package com.mkl.inscanner.ui.theme
 
 import android.app.Activity
 import android.os.Build

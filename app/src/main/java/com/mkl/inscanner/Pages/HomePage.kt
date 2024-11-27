@@ -23,20 +23,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.example.inscanner.R
+import com.mkl.inscanner.MainActivity
+import com.mkl.inscanner.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavHostController){
+    val context = LocalContext.current as MainActivity
     Column (
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF000E09)),
-        //verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -73,7 +75,11 @@ fun HomePage(navController: NavHostController){
                             width = 2.dp,
                             color = Color.White,
                             shape = RoundedCornerShape(16.dp)
-                        ).clickable{navController.navigate("QRCodeScannerScreen")}
+                        ).clickable{
+                            if (context.checkCameraPermission() ) {
+                                navController.navigate("QRCodeScannerScreen")
+                            }
+                        }
                 ){
                     Image(
                         painter = painterResource(id = R.drawable.mdi_line_scan),

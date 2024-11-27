@@ -1,4 +1,4 @@
-package com.example.inscanner
+package com.mkl.inscanner
 import HomePage
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -9,9 +9,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.inscanner.Pages.IntroPage
-import com.example.inscanner.Pages.QRCodeScannerScreen
-import com.example.inscanner.Pages.SplashScreen
+import com.mkl.inscanner.Pages.IntroPage
+import com.mkl.inscanner.Pages.QRCodeScannerScreen
+import com.mkl.inscanner.Pages.SplashScreen
 
 @Composable
 fun MyApp() {
