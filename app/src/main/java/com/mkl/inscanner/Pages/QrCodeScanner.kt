@@ -1,6 +1,10 @@
 package com.mkl.inscanner.Pages
 
+import android.content.Context
 import android.graphics.BitmapFactory
+import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -41,6 +45,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.zxing.BinaryBitmap
@@ -64,7 +69,7 @@ fun QRCodeScanner(
         ProcessCameraProvider.getInstance(context)
     }
     val previewView = remember { PreviewView(context) }
-    var isFlashOn by remember { mutableStateOf(false) }
+
 
     val qrCodeAnalyzer = remember {
         QRCodeAnalyzer { qrCode ->
@@ -80,11 +85,33 @@ fun QRCodeScanner(
             decodeQRCodeFromUri(uri, context, onQRCodeScanned)
         }
     }
+    var isTorchOn by remember { mutableStateOf(false) }
+    val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+    val cameraId = cameraManager.cameraIdList.find { id ->
+        cameraManager.getCameraCharacteristics(id)
+            .get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
+    }
+
+    fun toggleTorch(turnOn: Boolean) {
+        cameraId?.let {
+            try {
+                cameraManager.setTorchMode(cameraId, turnOn)
+                isTorchOn = turnOn
+            } catch (e: CameraAccessException) {
+                when (e.reason) {
+                    CameraAccessException.CAMERA_IN_USE -> Log.e("Torch", "Camera in use by another process")
+                    else -> Log.e("Torch", "Error toggling torch", e)
+                }
+            } catch (e: Exception) {
+                Log.e("Torch", "Unexpected error", e)
+            }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Add the image row at the top
+        var lensFacing by remember { mutableStateOf(CameraSelector.LENS_FACING_BACK) }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -97,32 +124,68 @@ fun QRCodeScanner(
                 painter = painterResource(id = R.drawable.imageicon),
                 contentDescription = "Image icon",
                 modifier = Modifier
-                    .clickable { }
-                    .size(32.dp) // Adjust size as needed
-            )
-            Spacer(modifier = Modifier.width(32.dp))
-            Image(
-                painter = painterResource(
-                    id = if (isFlashOn) R.drawable.flash_on else R.drawable.flash_off
-                ),
-                contentDescription = "change",
-                modifier = Modifier
                     .clickable {
-                       // isFlashOn =
-                        camera?.cameraControl?.enableTorch(!isFlashOn)
+                        pickImageLauncher.launch("image/*")
                     }
                     .size(32.dp) // Adjust size as needed
             )
             Spacer(modifier = Modifier.width(32.dp))
             Image(
-                painter = painterResource(id = R.drawable.flip_camera),
-                contentDescription = "Recycle",
+                painter = painterResource(
+                    id = if (isTorchOn) R.drawable.flash_on else R.drawable.flash_off
+                ),
+                contentDescription = "change",
                 modifier = Modifier
-                    .clickable { pickImageLauncher.launch("image/*") }
+                    .clickable {
+                        toggleTorch(!isTorchOn)
+                    }
+                    .size(32.dp) // Adjust size as needed
+            )
+
+            Spacer(modifier = Modifier.width(32.dp))
+            Image(
+                painter = painterResource(id = R.drawable.flip_camera),
+                contentDescription = "Flip Camera",
+                modifier = Modifier
+                    .clickable {
+                        lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
+                            CameraSelector.LENS_FACING_FRONT
+                        } else {
+                            CameraSelector.LENS_FACING_BACK
+                        }
+                        cameraProviderFuture.addListener({
+                            val cameraProvider = cameraProviderFuture.get()
+                            val preview = Preview.Builder().build().also {
+                                it.setSurfaceProvider(previewView.surfaceProvider)
+                            }
+
+                            val cameraSelector = CameraSelector.Builder()
+                                .requireLensFacing(lensFacing)
+                                .build()
+
+                            val imageAnalysis = ImageAnalysis.Builder()
+                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                                .build()
+                                .also {
+                                    it.setAnalyzer(ContextCompat.getMainExecutor(context), qrCodeAnalyzer)
+                                }
+
+                            try {
+                                cameraProvider.unbindAll()
+                                camera = cameraProvider.bindToLifecycle(
+                                    lifecycleOwner,
+                                    cameraSelector,
+                                    preview,
+                                    imageAnalysis
+                                )
+                            } catch (exc: Exception) {
+                                Log.e("QRCodeScanner", "Use case binding failed", exc)
+                            }
+                        }, ContextCompat.getMainExecutor(context))
+                    }
                     .size(32.dp) // Adjust size as needed
             )
         }
-
         Box(modifier = Modifier.fillMaxSize()) {
             AndroidView(
                 factory = { previewView },
@@ -204,6 +267,7 @@ fun QRCodeScanner(
         }
     }
 }
+
 
 @Composable
 fun ZoomButton(text: String, onClick: () -> Unit) {

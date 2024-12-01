@@ -115,7 +115,18 @@ fun HomePage(navController: NavHostController){
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ){
-                    Box(modifier = Modifier.border(width = 2.dp, color = Color.White, shape = RoundedCornerShape(16.dp))){
+                    Box(
+                        modifier = Modifier
+                            .border(
+                                width = 2.dp,
+                                color = Color.White,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .clickable {
+                                navController.navigate("createScreen")
+                            }
+                    )
+                    {
                         Image(
                             painter = painterResource(id = R.drawable.system_uicons_create),
                             contentDescription = "Create",

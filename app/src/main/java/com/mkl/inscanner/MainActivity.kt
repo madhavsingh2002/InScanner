@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import com.mkl.inscanner.ui.theme.InScannerTheme
 
 class MainActivity : ComponentActivity() {
-    // Register for permission result callback
     private val requestCameraPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
