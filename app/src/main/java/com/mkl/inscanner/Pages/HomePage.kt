@@ -102,13 +102,13 @@ fun HomePage(navController: NavHostController){
                 ){
                     Box(modifier = Modifier.border(width = 2.dp, color = Color.White, shape = RoundedCornerShape(16.dp))){
                         Image(
-                            painter = painterResource(id = R.drawable.material_symbols_history),
-                            contentDescription = "History",
+                            painter = painterResource(id = R.drawable.saved),
+                            contentDescription = "Saved",
                             modifier = Modifier.size(100.dp).padding(24.dp)
                         )
                     }
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = "History", color = Color.White, fontSize = 22.sp )
+                    Text(text = "Saved", color = Color.White, fontSize = 22.sp )
                 }
                 Spacer(modifier = Modifier.width(50.dp))
                 Column(

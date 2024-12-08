@@ -30,13 +30,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import com.mkl.inscanner.MainActivity
 import com.mkl.inscanner.R
 import com.mkl.inscanner.models.QrtileItems
 
 @Composable
 fun CreateScreen(navController: NavHostController){
-    val context = LocalContext.current as MainActivity
     Column (
         modifier = Modifier
                 .fillMaxSize()
@@ -75,7 +75,12 @@ fun CreateScreen(navController: NavHostController){
                             )
                             .padding(12.dp)
                             .fillMaxWidth()
-
+                            .clickable{
+                                val gson = Gson()
+                                val json = gson.toJson(items) // Serialize Qrtile to JSON
+                                navController.navigate("QRCodeGeneratorScreen/$json")
+//                                navController.navigate("QRCodeGeneratorScreen/${items}")
+                            }
                     ){
                         Image(
                             painter = painterResource(id = items.iconRes),

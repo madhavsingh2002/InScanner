@@ -1,7 +1,9 @@
 package com.mkl.inscanner.models
 
 import com.mkl.inscanner.R
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Qrtile(
     val text: String,
     val iconRes: Int

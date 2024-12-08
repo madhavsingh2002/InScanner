@@ -69,8 +69,6 @@ fun QRCodeScanner(
         ProcessCameraProvider.getInstance(context)
     }
     val previewView = remember { PreviewView(context) }
-
-
     val qrCodeAnalyzer = remember {
         QRCodeAnalyzer { qrCode ->
             onQRCodeScanned(qrCode)
